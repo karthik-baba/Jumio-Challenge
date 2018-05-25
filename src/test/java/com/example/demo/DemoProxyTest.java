@@ -34,62 +34,62 @@ import java.util.Base64;
 @SpringBootTest(webEnvironment= SpringBootTest.WebEnvironment.DEFINED_PORT, classes = DemoApplication.class)
 public class DemoProxyTest {
 
-    @Autowired
-    private TestRestTemplate restTemplate;
+	@Autowired
+	private TestRestTemplate restTemplate;
 
 	HttpHeaders headers = new HttpHeaders();
 
-    static ConfigurableApplicationContext aService;
+	static ConfigurableApplicationContext aService;
 
-    @BeforeClass
-    public static void startBookService() {
-    	aService = SpringApplication.run(A.class,
-                "--server.port=5000");
-    }
+	@BeforeClass
+	public static void startBookService() {
+		aService = SpringApplication.run(A.class,
+				"--server.port=5000");
+	}
 
-    @AfterClass
-    public static void closeBookService() {
-    	aService.close();
-    }
+	@AfterClass
+	public static void closeBookService() {
+		aService.close();
+	}
 
-    @Before
-    public void setup() {
-        RequestContext.testSetCurrentContext(new RequestContext());
-    }
+	@Before
+	public void setup() {
+		RequestContext.testSetCurrentContext(new RequestContext());
+	}
 
-    @Test
-    public void test() {
-      
-        ARequestBody reqBody=new ARequestBody();
-        reqBody.setImage("test");
-        
-        System.out.println("Input Http Request Body:"+reqBody);
-        
-        HttpEntity<ARequestBody> entity = new HttpEntity<ARequestBody>(reqBody, headers);
+	@Test
+	public void test() {
 
-        
+		ARequestBody reqBody=new ARequestBody();
+		reqBody.setImage("test");
+
+		System.out.println("Input Http Request Body:"+reqBody);
+
+		HttpEntity<ARequestBody> entity = new HttpEntity<ARequestBody>(reqBody, headers);
+
+
 		ResponseEntity<ARequestBody> resp = restTemplate.exchange("/api/image",
 				HttpMethod.POST, entity, ARequestBody.class);
-		
-		
+
+
 		//Verifying the response has Base64 Encode String
 		//Encoding the request data and verifying with the response data
 		Assert.assertEquals(new String(Base64.getEncoder().encode(reqBody.getImage().getBytes())), resp.getBody().getImage());
-		
+
 		//Verifying whatever was base64 encoded is the request sent in first place
 		//Decoding the response and verifying with request data
 		Assert.assertEquals(reqBody.getImage(), new String(Base64.getDecoder().decode(resp.getBody().getImage())));
 
-    }
+	}
 
-    @Configuration
-    @EnableAutoConfiguration
-    @RestController
-    @RequestMapping(value="/api")
-    static class A {
-        @RequestMapping(value="/image", method = RequestMethod.POST)
-        public ARequestBody getImage(@RequestBody ARequestBody areq) {
-            return areq;
-        }
-    }
+	@Configuration
+	@EnableAutoConfiguration
+	@RestController
+	@RequestMapping(value="/api")
+	static class A {
+		@RequestMapping(value="/image", method = RequestMethod.POST)
+		public ARequestBody getImage(@RequestBody ARequestBody areq) {
+			return areq;
+		}
+	}
 }
