@@ -42,13 +42,13 @@ public class DemoProxyTest {
 	static ConfigurableApplicationContext aService;
 
 	@BeforeClass
-	public static void startBookService() {
+	public static void startAService() {
 		aService = SpringApplication.run(A.class,
 				"--server.port=5000");
 	}
 
 	@AfterClass
-	public static void closeBookService() {
+	public static void closeAService() {
 		aService.close();
 	}
 
@@ -58,7 +58,7 @@ public class DemoProxyTest {
 	}
 
 	@Test
-	public void test() {
+	public void verifyEncodedBody() {
 
 		ARequestBody reqBody=new ARequestBody();
 		reqBody.setImage("test");
